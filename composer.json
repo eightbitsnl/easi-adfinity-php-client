@@ -1,0 +1,20 @@
+{
+    "name": "eightbitsnl/easi-adfinity-php-client",
+    "description": "A PHP Client for Easi Adfinity Accounting Software",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "7.5.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Eightbitsnl\\EasiAdfinityPhpClient\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Loek Wetzels",
+            "email": "loek.wetzels@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
