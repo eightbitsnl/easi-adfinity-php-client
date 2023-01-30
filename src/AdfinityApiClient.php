@@ -4,6 +4,7 @@ namespace Eightbitsnl\EasiAdfinityPhpClient;
 
 use BadMethodCallException;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\GetGeneralAccounts;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\GetCompanies;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +13,9 @@ use Psr\Http\Message\ResponseInterface;
  * Eightbitsnl\EasiAdfinityPhpClient\AdfinityApiClient
  *
  * @property Requests\V1\GetGeneralAccounts $V1GetGeneralAccounts
+ * @property Requests\V2\GetCompanies $V2GetCompanies
  * @method Requests\AdfinityResponse V1GetGeneralAccounts()
+ * @method Requests\AdfinityResponse V2GetCompanies()
  */
 class AdfinityApiClient
 {
@@ -177,9 +180,9 @@ class AdfinityApiClient
      */
     private function initializeEndpoints()
     {
-        // $this->V1GetGeneralAccounts = new GetGeneralAccounts($this);
         $this->requests = [
-            'V1GetGeneralAccounts' => new GetGeneralAccounts($this)
+            'V1GetGeneralAccounts' => new GetGeneralAccounts($this),
+            'V2GetCompanies' => new GetCompanies($this)
         ];
     }
 
@@ -192,10 +195,9 @@ class AdfinityApiClient
      */
     public function __call($name, $arguments)
     {
-
         if( $this->isRequest($name) )
         {
-            return $this->requests[$name];
+            return $this->requests[$name]->setArguments($arguments);
         }
 
         throw new BadMethodCallException();
