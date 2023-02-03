@@ -4,6 +4,8 @@ namespace Eightbitsnl\EasiAdfinityPhpClient\Requests;
 
 use BadMethodCallException;
 use Eightbitsnl\EasiAdfinityPhpClient\AdfinityApiClient;
+use Eightbitsnl\EasiAdfinityPhpClient\Exceptions\NotFoundException;
+use GuzzleHttp\Exception\ClientException;
 
 class BaseRequest
 {
@@ -17,6 +19,7 @@ class BaseRequest
     public const HTTP_POST = "POST";
     public const HTTP_DELETE = "DELETE";
     public const HTTP_PATCH = "PATCH";
+    public const HTTP_PUT = "PUT";
 
     protected $querystring = [];
     protected $uri_path = '';
@@ -65,14 +68,27 @@ class BaseRequest
         return $this->client->base_url . static::URI . $this->parseUriPath(). $this->parseQueryString();
     }
 
-    public function send()
+    public function send($httpBody = null)
     {
-        return new AdfinityResponse(
-            $this->client->performHttpCallToFullUrl(
-                static::HTTP_METHOD,
-                $this->getFullUrl()
-            )
-        );
+        try
+        {
+            return new AdfinityResponse(
+                $this->client->performHttpCallToFullUrl(
+                    static::HTTP_METHOD,
+                    $this->getFullUrl(),
+                    $httpBody
+                    )
+                );
+        }
+        catch(ClientException $guzzleException)
+        {
+            if($guzzleException->getResponse()->getStatusCode() == 404)
+            {
+                throw (new NotFoundException)->setClientException($guzzleException);
+            }
+
+            throw $guzzleException;
+        }
     }
 
     public function parseUriPath()

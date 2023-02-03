@@ -26,9 +26,8 @@ class AdfinityResponse
 
     public function json()
     {
-        return json_decode($this->response->getBody());
+        return json_decode($this->response->getBody()->getContents(), true);
     }
-
 
 }
 

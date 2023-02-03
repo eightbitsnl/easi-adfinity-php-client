@@ -3,7 +3,7 @@
     "description": "A PHP Client for Easi Adfinity Accounting Software",
     "type": "library",
     "require": {
-        "guzzlehttp/guzzle": "7.5.x-dev"
+        "guzzlehttp/guzzle": "^7.0"
     },
     "autoload": {
         "psr-4": {

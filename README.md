@@ -4,6 +4,8 @@ https://tools.adfinity.be/easimaster/openapi/index.html
 
 ## Usage
 
+### Initialize Client
+
 ```php
 use Eightbitsnl\EasiAdfinityPhpClient\AdfinityApiClient;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\GetGeneralAccounts;
@@ -17,6 +19,11 @@ $client = (new AdfinityApiClient())
     ->setDatabase("EXAMPLE_DATABASE")
     ->setEnvir("123456");
 
+```
+
+### GET Requests
+
+```PHP
 // Access Response as property
 $response = $client->V1GetGeneralAccounts;
 
@@ -38,4 +45,36 @@ $response = $client->V1GetGeneralAccounts()
     ->filter('type', 'ne', 'CHA')
     ->filter('label', '%vermogen%')
     ->json();
+
+
+// set URI
+$slug = "{documentYear}/{documentJournal}/{documentNumber}";
+$response = $client->V2GetCompanies($slug)->json();
+```
+
+### POST Requests
+
+```PHP
+
+$payload = [
+    'foo' => 'bar'
+];
+
+$response = $client->V2PostCompanies()
+    ->send($payload);
+
+```
+
+### PUT Requests
+
+```PHP
+
+$payload = [
+    'foo' => 'bar'
+];
+
+$slug = "{identifier}";
+$response = $client->V2PutCompanies($slug)
+    ->send($payload);
+
 ```

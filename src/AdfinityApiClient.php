@@ -3,8 +3,14 @@
 namespace Eightbitsnl\EasiAdfinityPhpClient;
 
 use BadMethodCallException;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\GetAccountingEntries;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\GetGeneralAccounts;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\PostAccountingEntries;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\PostFileUploadRequest;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\GetCompanies;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\PostCompanies;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\PostDocumentManagement;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\PutCompanies;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,13 +18,40 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Eightbitsnl\EasiAdfinityPhpClient\AdfinityApiClient
  *
+ * @property Requests\V1\GetAccountingEntries $V1GetAccountingEntries
  * @property Requests\V1\GetGeneralAccounts $V1GetGeneralAccounts
  * @property Requests\V2\GetCompanies $V2GetCompanies
+ * @method Requests\AdfinityResponse V1GetAccountingEntries()
  * @method Requests\AdfinityResponse V1GetGeneralAccounts()
+ * @method Requests\AdfinityResponse V1PostAccountingEntries()
+ * @method Requests\AdfinityResponse V1PostFileUploadRequest()
  * @method Requests\AdfinityResponse V2GetCompanies()
+ * @method Requests\AdfinityResponse V2PostCompanies()
+ * @method Requests\AdfinityResponse V2PostDocumentManagement()
+ * @method Requests\AdfinityResponse V2PutCompanies()
  */
 class AdfinityApiClient
 {
+
+    /**
+     * Initialize Requests
+     *
+     * @return void
+     */
+    private function initializeRequests()
+    {
+        $this->requests = [
+            'V1GetAccountingEntries' => new GetAccountingEntries($this),
+            'V1GetGeneralAccounts' => new GetGeneralAccounts($this),
+            'V1PostAccountingEntries' => new PostAccountingEntries($this),
+            'V1PostFileUploadRequest' => new PostFileUploadRequest($this),
+            'V2GetCompanies' => new GetCompanies($this),
+            'V2PostCompanies' => new PostCompanies($this),
+            'V2PostDocumentManagement' => new PostDocumentManagement($this),
+            'V2PutCompanies' => new PutCompanies($this)
+        ];
+    }
+
     private $requests = [];
 
     /**
@@ -170,20 +203,7 @@ class AdfinityApiClient
 	{
 		$this->httpClient = $httpClient ?? new Client();
 
-        $this->initializeEndpoints();
-    }
-
-    /**
-     * Initialize Endpoints
-     *
-     * @return void
-     */
-    private function initializeEndpoints()
-    {
-        $this->requests = [
-            'V1GetGeneralAccounts' => new GetGeneralAccounts($this),
-            'V2GetCompanies' => new GetCompanies($this)
-        ];
+        $this->initializeRequests();
     }
 
     /**
@@ -240,9 +260,9 @@ class AdfinityApiClient
     public function performHttpCallToFullUrl($httpMethod, $url, $httpBody = null): ResponseInterface
     {
         $options = [
-            'verify' => $this->verify_ssl,
+            "verify" => $this->verify_ssl,
             "headers" => [
-                'Authorization' => "Basic {$this->getAuthToken()}",
+                "Authorization" => "Basic {$this->getAuthToken()}",
                 "Accept" => "application/json",
                 "Content-Type" => "application/json",
                 "adfinity-database" => $this->database,
@@ -252,6 +272,11 @@ class AdfinityApiClient
                 "adfinity-language" => $this->language,
             ]
         ];
+
+        if( !is_null($httpBody) )
+        {
+            $options['json'] = $httpBody;
+        }
 
         return $this->httpClient->request($httpMethod, $url, $options);
     }
