@@ -34,21 +34,21 @@ class AdfinityApiClient
 {
 
     /**
-     * Initialize Requests
+     * Map Requests
      *
      * @return void
      */
-    private function initializeRequests()
+    private function mapRequests()
     {
         $this->requests = [
-            'V1GetAccountingEntries' => new GetAccountingEntries($this),
-            'V1GetGeneralAccounts' => new GetGeneralAccounts($this),
-            'V1PostAccountingEntries' => new PostAccountingEntries($this),
-            'V1PostFileUploadRequest' => new PostFileUploadRequest($this),
-            'V2GetCompanies' => new GetCompanies($this),
-            'V2PostCompanies' => new PostCompanies($this),
-            'V2PostDocumentManagement' => new PostDocumentManagement($this),
-            'V2PutCompanies' => new PutCompanies($this)
+            'V1GetAccountingEntries' => GetAccountingEntries::class,
+            'V1GetGeneralAccounts' => GetGeneralAccounts::class,
+            'V1PostAccountingEntries' => PostAccountingEntries::class,
+            'V1PostFileUploadRequest' => PostFileUploadRequest::class,
+            'V2GetCompanies' => GetCompanies::class,
+            'V2PostCompanies' => PostCompanies::class,
+            'V2PostDocumentManagement' => PostDocumentManagement::class,
+            'V2PutCompanies' => PutCompanies::class
         ];
     }
 
@@ -203,7 +203,7 @@ class AdfinityApiClient
 	{
 		$this->httpClient = $httpClient ?? new Client();
 
-        $this->initializeRequests();
+        $this->mapRequests();
     }
 
     /**
@@ -217,7 +217,7 @@ class AdfinityApiClient
     {
         if( $this->isRequest($name) )
         {
-            return $this->requests[$name]->setArguments($arguments);
+            return (new $this->requests[$name]($this))->setArguments($arguments);
         }
 
         throw new BadMethodCallException();
@@ -249,19 +249,14 @@ class AdfinityApiClient
     }
 
     /**
-     * Perform a http call
+     * Get Request Headers
      *
-     * @param string $httpMethod
-     * @param string $url
-     * @param string|null $httpBody
-     * @throws GuzzleException
-     * @return ResponseInterface
+     * @return array Request Headers
      */
-    public function performHttpCallToFullUrl($httpMethod, $url, $httpBody = null): ResponseInterface
+    private function mergeRequestHeaders($headers = []) : array
     {
-        $options = [
-            "verify" => $this->verify_ssl,
-            "headers" => [
+        return array_merge(
+            [
                 "Authorization" => "Basic {$this->getAuthToken()}",
                 "Accept" => "application/json",
                 "Content-Type" => "application/json",
@@ -270,12 +265,33 @@ class AdfinityApiClient
                 "adfinity-exercice" => $this->exercice,
                 "adfinity-period" => $this->period,
                 "adfinity-language" => $this->language,
-            ]
+            ],
+            $headers
+        );
+    }
+    /**
+     * Perform a http call
+     *
+     * @param string $httpMethod
+     * @param string $url
+     * @param string|null $httpBody
+     * @throws GuzzleException
+     * @return ResponseInterface
+     */
+    public function performHttpCallToFullUrl($httpMethod, $url, $headers = [], $httpBody = null): ResponseInterface
+    {
+
+        $options = [
+            "verify" => $this->verify_ssl,
+            "headers" => $this->mergeRequestHeaders($headers)
         ];
 
         if( !is_null($httpBody) )
         {
-            $options['json'] = $httpBody;
+            if( $options['headers']['Content-Type'] == "application/json")
+                $options['json'] = $httpBody;
+            else
+                $options['body'] = $httpBody;
         }
 
         return $this->httpClient->request($httpMethod, $url, $options);

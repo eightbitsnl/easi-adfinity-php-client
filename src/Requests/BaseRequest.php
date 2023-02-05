@@ -30,6 +30,13 @@ class BaseRequest
     protected AdfinityApiClient $client;
 
     /**
+     * Request Headers
+     *
+     * @var array
+     */
+    protected array $request_headers = [];
+
+    /**
      *
      * @param AdfinityApiClient $client
      */
@@ -63,6 +70,12 @@ class BaseRequest
         throw new BadMethodCallException();
     }
 
+    public function setHeader($key, $value)
+    {
+        $this->request_headers[$key] = $value;
+        return $this;
+    }
+
     public function getFullUrl()
     {
         return $this->client->base_url . static::URI . $this->parseUriPath(). $this->parseQueryString();
@@ -70,15 +83,17 @@ class BaseRequest
 
     public function send($httpBody = null)
     {
+
         try
         {
             return new AdfinityResponse(
                 $this->client->performHttpCallToFullUrl(
                     static::HTTP_METHOD,
                     $this->getFullUrl(),
+                    $this->request_headers,
                     $httpBody
-                    )
-                );
+                )
+            );
         }
         catch(ClientException $guzzleException)
         {
@@ -99,12 +114,18 @@ class BaseRequest
         return '/'. trim(ltrim($this->uri_path, '/'));
     }
 
+    public function addQueryStringParam($key, $value)
+    {
+        $this->querystring[$key] = $value;
+        return $this;
+    }
+
     public function parseQueryString()
     {
         if(! count($this->querystring) )
             return '';
 
-        return '?'. implode('&', $this->querystring);
+        return '?'. http_build_query($this->querystring);
     }
 
 }

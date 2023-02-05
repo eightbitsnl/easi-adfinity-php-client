@@ -16,12 +16,18 @@ class AdfinityResponse
 
     public function __call($name, $arguments)
     {
-        return call_user_func([$this->response, $name], $arguments);
+        return call_user_func_array([$this->response, $name], $arguments);
     }
 
-    public function location()
+    public function adfinityLocation()
     {
-        $this->response->getHeader("Location");
+        $location = $this->response->getHeader("Location");
+
+        if (is_array($location) && count($location)) {
+            return $location[0];
+        }
+
+        return null;
     }
 
     public function json()

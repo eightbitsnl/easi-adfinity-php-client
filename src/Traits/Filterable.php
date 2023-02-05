@@ -36,7 +36,7 @@ trait Filterable
 
         if(count($args) == 2)
         {
-            $this->querystring[] = $args[0] .'='. $args[1];
+            $this->addQueryStringParam($args[0], $args[1]);
         }
 
         elseif(count($args) == 3)
@@ -52,7 +52,7 @@ trait Filterable
                 throw new InvalidArgumentException("Unsupported Operator: ". $args[1]);
             }
 
-            $this->querystring[] = $args[0] .'['.$args[1].']='. $args[2];
+            $this->addQueryStringParam($args[0] .'['.$args[1].']', $args[2]);
         }
 
         else
