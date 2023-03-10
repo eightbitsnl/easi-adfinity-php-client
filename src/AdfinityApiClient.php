@@ -123,6 +123,13 @@ class AdfinityApiClient
     protected ?string $language = null;
 
     /**
+     * Timeout Delay
+     *
+     * @var int|null
+     */
+    protected ?int $timeout_delay = 120;
+
+    /**
      * set base_url
      *
      * @param string $base_url
@@ -191,6 +198,18 @@ class AdfinityApiClient
     public function setEnvir(string $envir) : self
     {
         $this->envir = $envir;
+        return $this;
+    }
+
+    /**
+     * set timeout delay
+     *
+     * @param string $timeout_delay
+     * @return self
+     */
+    public function setTimeoutDelay(string $timeout_delay) : self
+    {
+        $this->timeout_delay = $timeout_delay;
         return $this;
     }
 
@@ -265,6 +284,7 @@ class AdfinityApiClient
                 "adfinity-exercice" => $this->exercice,
                 "adfinity-period" => $this->period,
                 "adfinity-language" => $this->language,
+                "adfinity-Dispatch-Timeout-Delay" => $this->timeout_delay,
             ],
             $headers
         );
