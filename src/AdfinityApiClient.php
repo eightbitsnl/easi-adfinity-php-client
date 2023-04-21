@@ -4,9 +4,11 @@ namespace Eightbitsnl\EasiAdfinityPhpClient;
 
 use BadMethodCallException;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\GetAccountingEntries;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\GetAccountingEntries as V2GetAccountingEntries;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\GetGeneralAccounts;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\PostAccountingEntries;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\PostFileUploadRequest;
+use Eightbitsnl\EasiAdfinityPhpClient\Requests\V1\PutAccountingEntries;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\GetCompanies;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\PostCompanies;
 use Eightbitsnl\EasiAdfinityPhpClient\Requests\V2\PostDocumentManagement;
@@ -24,6 +26,7 @@ use Psr\Http\Message\ResponseInterface;
  * @method Requests\AdfinityResponse V1GetAccountingEntries()
  * @method Requests\AdfinityResponse V1GetGeneralAccounts()
  * @method Requests\AdfinityResponse V1PostAccountingEntries()
+ * @method Requests\AdfinityResponse V1PutAccountingEntries()
  * @method Requests\AdfinityResponse V1PostFileUploadRequest()
  * @method Requests\AdfinityResponse V2GetCompanies()
  * @method Requests\AdfinityResponse V2PostCompanies()
@@ -42,8 +45,10 @@ class AdfinityApiClient
     {
         $this->requests = [
             'V1GetAccountingEntries' => GetAccountingEntries::class,
+            'V2GetAccountingEntries' => V2GetAccountingEntries::class,
             'V1GetGeneralAccounts' => GetGeneralAccounts::class,
             'V1PostAccountingEntries' => PostAccountingEntries::class,
+            'V1PutAccountingEntries' => PutAccountingEntries::class,
             'V1PostFileUploadRequest' => PostFileUploadRequest::class,
             'V2GetCompanies' => GetCompanies::class,
             'V2PostCompanies' => PostCompanies::class,
